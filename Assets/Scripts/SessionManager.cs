@@ -23,6 +23,7 @@ public class SessionManager : MonoBehaviour
 
     private void Start()
     {
+        tileLength = GetTileLength();
         spawnedTiles = new GameObject[3];
         startGame.onClick.AddListener(delegate
         {
@@ -37,9 +38,10 @@ public class SessionManager : MonoBehaviour
 
     private void StartGame()
     {
-        spawnedTiles[0] = Instantiate(caveTile, caveTile.transform.position - new Vector3(0f, 0f, GetTileLength()), Quaternion.Euler(0f, 90f, 0f));
         spawnedTiles[1] = Instantiate(caveTile, caveTile.transform.position, Quaternion.Euler(0f, 90f, 0f));
-        spawnedTiles[2] = Instantiate(caveTile, caveTile.transform.position + new Vector3(0f, 0f, GetTileLength()), Quaternion.Euler(0f, 90f, 0f));
+
+        spawnedTiles[0] = Instantiate(caveTile, spawnedTiles[1].transform.position - new Vector3(0f, 0f, tileLength), Quaternion.Euler(0f, 90f, 0f));
+        spawnedTiles[2] = Instantiate(caveTile, spawnedTiles[1].transform.position + new Vector3(0f, 0f, tileLength), Quaternion.Euler(0f, 90f, 0f));
         GameObject go = Instantiate(sphere, sphere.transform.position, Quaternion.identity);
         go.GetComponent<SimpleController>().DificultyLvl = dificultyLvl.value;
         go.GetComponent<SimpleController>().ScoreText = scoreText;
@@ -85,10 +87,15 @@ public class SessionManager : MonoBehaviour
             }
         }
         gameOverUI.GetComponentsInChildren<Text>()[1].text = score.ToString();
-        gameOverUI.GetComponentInChildren<Button>().onClick.AddListener(delegate
+        gameOverUI.GetComponentsInChildren<Button>()[0].onClick.AddListener(delegate
         {
             gameOverUI.SetActive(false);
             welcominUI.SetActive(true);
+        });
+
+        gameOverUI.GetComponentsInChildren<Button>()[1].onClick.AddListener(delegate
+        {
+            Application.Quit();
         });
     }
 

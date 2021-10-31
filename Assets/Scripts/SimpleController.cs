@@ -34,7 +34,6 @@ public class SimpleController : MonoBehaviour
     {
         set
         {
-            Debug.Log("Value: " + value.ToString());
             if (value == 1)
             {
                 movingVelocity += 5f;
@@ -137,10 +136,10 @@ public class SimpleController : MonoBehaviour
     private void MoveForward()
     {
         transform.position += Vector3.forward * Time.deltaTime * movingVelocity;
-        totalDistance++;
+
         if (scoreText != null)
         {
-            scoreText.text = totalDistance.ToString();
+            scoreText.text = ((int)transform.position.z).ToString();
         }
     }
 
@@ -175,7 +174,7 @@ public class SimpleController : MonoBehaviour
         Destroy(GetComponent<Rigidbody>());
         StartCoroutine("DeathAnimation");
         GetComponent<Animator>().SetTrigger("FireUp");
-        GameOver?.Invoke(totalDistance);
+        GameOver?.Invoke((int)transform.position.z);
 
 
     }
