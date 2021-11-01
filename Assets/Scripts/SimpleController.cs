@@ -111,22 +111,22 @@ public class SimpleController : MonoBehaviour
 
     void Update()
     {
-        // if (Input.GetKey(KeyCode.Space))
-        // {
-        //     if (falling)
-        //     {
-        //         falling = !falling;
-        //         yVelocity = 0;
-        //     }
-        // }
-        // else
-        // {
-        //     if (!falling)
-        //     {
-        //         falling = !falling;
-        //         yVelocity = 0;
-        //     }
-        // }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (falling)
+            {
+                falling = !falling;
+                yVelocity = 0;
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            if (!falling)
+            {
+                falling = !falling;
+                yVelocity = 0;
+            }
+        }
         PerformGravity();
         SetupCameraPosition();
         MoveForward();
