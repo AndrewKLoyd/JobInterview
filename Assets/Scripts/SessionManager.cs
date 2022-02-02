@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using GoogleMobileAds.Api;
 
 public class SessionManager : MonoBehaviour
 {
@@ -21,8 +22,30 @@ public class SessionManager : MonoBehaviour
     private float tileLength;
 
 
+    private InterstitialAd interstitial;
+
+    private void RequestInterstitial()
+    {
+#if UNITY_ANDROID
+        string adUnitId = "ca-app-pub-7037210179712297/5093616831";
+#elif UNITY_IPHONE
+        string adUnitId = "unexpected_platform";
+#else
+        string adUnitId = "unexpected_platform";
+#endif
+
+        // Initialize an InterstitialAd.
+        this.interstitial = new InterstitialAd(adUnitId);
+
+        // Create an empty ad request.
+        AdRequest request = new AdRequest.Builder().Build();
+        // Load the interstitial with the request.
+        this.interstitial.LoadAd(request);
+    }
+
     private void Start()
     {
+        MobileAds.Initialize(initStatus => { });
         tileLength = GetTileLength();
         spawnedTiles = new GameObject[3];
         startGame.onClick.AddListener(delegate
@@ -38,6 +61,7 @@ public class SessionManager : MonoBehaviour
 
     private void StartGame()
     {
+        RequestInterstitial();
         spawnedTiles[1] = Instantiate(caveTile, caveTile.transform.position, Quaternion.Euler(0f, 90f, 0f));
 
         spawnedTiles[0] = Instantiate(caveTile, spawnedTiles[1].transform.position - new Vector3(0f, 0f, tileLength), Quaternion.Euler(0f, 90f, 0f));
@@ -45,6 +69,8 @@ public class SessionManager : MonoBehaviour
         GameObject go = Instantiate(sphere, sphere.transform.position, Quaternion.identity);
         go.GetComponent<SimpleController>().DificultyLvl = dificultyLvl.value;
         go.GetComponent<SimpleController>().ScoreText = scoreText;
+
+        
     }
 
     private float GetTileLength()
@@ -87,18 +113,24 @@ public class SessionManager : MonoBehaviour
             }
         }
         gameOverUI.GetComponentsInChildren<Text>()[1].text = score.ToString();
+        gameOverUI.GetComponentsInChildren<Button>()[0].onClick.RemoveAllListeners();
         gameOverUI.GetComponentsInChildren<Button>()[0].onClick.AddListener(delegate
         {
             gameOverUI.SetActive(false);
             welcominUI.SetActive(true);
         });
 
+        gameOverUI.GetComponentsInChildren<Button>()[1].onClick.RemoveAllListeners();
         gameOverUI.GetComponentsInChildren<Button>()[1].onClick.AddListener(delegate
         {
             Application.Quit();
         });
-    }
 
+        if (this.interstitial.IsLoaded())
+        {
+            this.interstitial.Show();
+        }
+    }
 
 
 
